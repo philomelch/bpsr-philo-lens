@@ -1,0 +1,7 @@
+# Test-only overrides (inherits the repo-root .editorconfig).
+[*.cs]
+# Test names are sentences (Refresh_keeps_the_last_player_while_reads_are_unsafe), the convention
+# in the framework's and launcher's tests. CA1707 targets public API names, not test methods.
+dotnet_diagnostic.CA1707.severity = none
+# Inline expected arrays read better in assertions; CA1861 guards hot-path allocations, which tests don't have.
+dotnet_diagnostic.CA1861.severity = none

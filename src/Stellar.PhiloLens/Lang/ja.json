@@ -1,0 +1,15 @@
+{
+  "card.button": "Lens",
+  "inspect.loading": "プレイヤーを読み込み中…",
+  "inspect.unknown_class": "クラス不明",
+  "inspect.class_id": "クラス {0}",
+  "inspect.class_spec": "{0} · {1}",
+  "inspect.spec_not_seen": "スペック未確認",
+  "stats.row": "{0}: {1}",
+  "stats.ability_score": "戦闘力",
+  "stats.season_strength": "シーズン強度",
+  "stats.none": "—",
+  "imagine.tier": "{0} · ティア{1}",
+  "section.imagines": "バトルイマジン",
+  "section.season_talent": "シーズン才能"
+}

@@ -1,0 +1,15 @@
+{
+  "card.button": "Lens",
+  "inspect.loading": "Nilo-load ang manlalaro…",
+  "inspect.unknown_class": "Hindi alam ang klase",
+  "inspect.class_id": "Klase {0}",
+  "inspect.class_spec": "{0} · {1}",
+  "inspect.spec_not_seen": "Hindi pa nakikita ang spec",
+  "stats.row": "{0}: {1}",
+  "stats.ability_score": "Ability Score",
+  "stats.season_strength": "Season Strength",
+  "stats.none": "—",
+  "imagine.tier": "{0} · Tier {1}",
+  "section.imagines": "Battle Imagines",
+  "section.season_talent": "Season Talent"
+}

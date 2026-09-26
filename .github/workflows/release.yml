@@ -1,0 +1,83 @@
+name: release
+# Every push to main: run CI, then publish a GitHub Release IF <Version> in the plugin csproj is new.
+#   - 0.0.0 means "not released yet": nothing is published.
+#   - A version whose tag already exists is skipped (releases are immutable; never re-published).
+#   - A new version needs a matching "## [x.y.z] - YYYY-MM-DD" section in CHANGELOG.md, or this fails.
+# The release carries the plugin DLL, its .sha256, and manifest.json, which the shared registry
+# (its own repo) picks up on its next scheduled run.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never run two releases at once; never cancel one halfway.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the tag + GitHub Release; nothing else
+    env:
+      PROJECT: src/Stellar.PhiloLens/Stellar.PhiloLens.csproj
+      DLL: src/Stellar.PhiloLens/bin/Release/net6.0/Stellar.PhiloLens.dll
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Decide whether this commit is a release
+        id: decide
+        run: |
+          version="$(dotnet msbuild "$PROJECT" -getProperty:Version)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [ "$version" = "0.0.0" ]; then
+            echo "::notice::Version is 0.0.0 (not released yet). Bump <Version> to publish a release."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          elif gh release view "v$version" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::notice::v$version is already released. Bump <Version> to publish a new one."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build (locked restore)
+        if: steps.decide.outputs.publish == 'true'
+        run: |
+          dotnet restore --locked-mode
+          dotnet build --no-restore -c Release
+
+      # Values reach the scripts through env vars, never ${{ }} inside `run:` (script injection).
+      - name: Assemble release files
+        if: steps.decide.outputs.publish == 'true'
+        env:
+          VERSION: ${{ steps.decide.outputs.version }}
+        run: >
+          dotnet run --project tools/ReleaseTool --no-build -c Release --
+          --root . --repository "$GITHUB_REPOSITORY" --commit "$GITHUB_SHA"
+          --version "$VERSION" --dll "$DLL" --output release
+
+      - name: Publish GitHub Release
+        if: steps.decide.outputs.publish == 'true'
+        env:
+          VERSION: ${{ steps.decide.outputs.version }}
+        run: |
+          name="$(jq -r .name stellar-plugin.json)"
+          gh release create "v$VERSION" \
+            "$DLL" "release/$(basename "$DLL").sha256" release/manifest.json \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "$name $VERSION" --notes-file release/notes.md

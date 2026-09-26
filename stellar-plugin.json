@@ -1,0 +1,8 @@
+{
+  "id": "philo-lens",
+  "name": "Philo Lens",
+  "description": "See other players' class and spec from their profile card.",
+  "author": "philomelch",
+  "tags": ["inspect", "social"],
+  "homepage": null
+}
