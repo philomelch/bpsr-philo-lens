@@ -1,0 +1,15 @@
+<Project>
+  <!-- The ONLY place package versions are set. Every entry here was vetted with the workspace
+       `dependency-review` skill; re-review before changing any version. -->
+  <ItemGroup Label="Plugin runtime (net6.0)">
+    <PackageVersion Include="Stellar.Abstractions" Version="2.11.0" />
+  </ItemGroup>
+  <ItemGroup Label="Tests only (net8.0)">
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+    <!-- xunit 2.x (not xunit.v3): 2.x is "Legacy" = security fixes only, but its graph is half the size
+         and, unlike xunit.v3, it doesn't pull in Microsoft.Testing telemetry (ApplicationInsights).
+         Test-only; never shipped. Decided 2026-09-18; revisit when migrating to v3 is worth it. -->
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+  </ItemGroup>
+</Project>

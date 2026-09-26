@@ -1,0 +1,15 @@
+{
+  "card.button": "Lens",
+  "inspect.loading": "กำลังโหลดผู้เล่น…",
+  "inspect.unknown_class": "ไม่ทราบคลาส",
+  "inspect.class_id": "คลาส {0}",
+  "inspect.class_spec": "{0} · {1}",
+  "inspect.spec_not_seen": "ยังไม่พบสเปก",
+  "stats.row": "{0}: {1}",
+  "stats.ability_score": "คะแนนความสามารถ",
+  "stats.season_strength": "พลังซีซั่น",
+  "stats.none": "—",
+  "imagine.tier": "{0} · ระดับ {1}",
+  "section.imagines": "แบทเทิลอิมเมจิน",
+  "section.season_talent": "ทาเลนต์ซีซั่น"
+}

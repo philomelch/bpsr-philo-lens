@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Tests run on net8.0 (like the framework's tests) while the plugin stays net6.0. -->
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Versions pinned in Directory.Packages.props. -->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Stellar.PhiloLens\Stellar.PhiloLens.csproj" />
+    <ProjectReference Include="..\..\tools\ReleaseTool\ReleaseTool.csproj" />
+  </ItemGroup>
+</Project>

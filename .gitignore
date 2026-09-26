@@ -1,0 +1,10 @@
+bin/
+obj/
+TestResults/
+*.user
+.vs/
+.idea/
+
+# Python bytecode (tools/icons/generate_lens_icon.py)
+__pycache__/
+*.pyc

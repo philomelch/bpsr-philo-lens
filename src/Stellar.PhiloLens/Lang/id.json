@@ -1,0 +1,15 @@
+{
+  "card.button": "Lens",
+  "inspect.loading": "Memuat pemain…",
+  "inspect.unknown_class": "Kelas tidak diketahui",
+  "inspect.class_id": "Kelas {0}",
+  "inspect.class_spec": "{0} · {1}",
+  "inspect.spec_not_seen": "Spesialisasi belum terlihat",
+  "stats.row": "{0}: {1}",
+  "stats.ability_score": "Skor Kemampuan",
+  "stats.season_strength": "Kekuatan Musim",
+  "stats.none": "—",
+  "imagine.tier": "{0} · Tingkat {1}",
+  "section.imagines": "Battle Imagine",
+  "section.season_talent": "Talenta Musim"
+}

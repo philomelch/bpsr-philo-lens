@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Build-time helper for .github/workflows/release.yml: turns the built DLL, CHANGELOG.md and
+       stellar-plugin.json into the per-version release manifest the shared registry consumes.
+       Never shipped with the plugin. BCL only: no package references. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>ReleaseTool</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Stellar.PhiloLens.Tests" />
+  </ItemGroup>
+</Project>

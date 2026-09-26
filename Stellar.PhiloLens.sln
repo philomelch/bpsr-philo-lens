@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CB830445-6655-4008-BAA7-2B265B701A9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stellar.PhiloLens", "src\Stellar.PhiloLens\Stellar.PhiloLens.csproj", "{9AF78EDF-3867-4172-A56F-BDE162344A64}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E0A58EFC-3AD6-45FC-B066-AFCE420CC243}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stellar.PhiloLens.Tests", "tests\Stellar.PhiloLens.Tests\Stellar.PhiloLens.Tests.csproj", "{CD47CC5F-8592-4308-A718-6A8225562D95}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{9CAB8535-0219-4736-94F5-134CE184CD21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReleaseTool", "tools\ReleaseTool\ReleaseTool.csproj", "{BD1F51D1-1917-4F5B-A179-55154D3A3653}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9AF78EDF-3867-4172-A56F-BDE162344A64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AF78EDF-3867-4172-A56F-BDE162344A64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AF78EDF-3867-4172-A56F-BDE162344A64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AF78EDF-3867-4172-A56F-BDE162344A64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD47CC5F-8592-4308-A718-6A8225562D95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD47CC5F-8592-4308-A718-6A8225562D95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD47CC5F-8592-4308-A718-6A8225562D95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD47CC5F-8592-4308-A718-6A8225562D95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD1F51D1-1917-4F5B-A179-55154D3A3653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD1F51D1-1917-4F5B-A179-55154D3A3653}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD1F51D1-1917-4F5B-A179-55154D3A3653}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD1F51D1-1917-4F5B-A179-55154D3A3653}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9AF78EDF-3867-4172-A56F-BDE162344A64} = {CB830445-6655-4008-BAA7-2B265B701A9F}
+		{CD47CC5F-8592-4308-A718-6A8225562D95} = {E0A58EFC-3AD6-45FC-B066-AFCE420CC243}
+		{BD1F51D1-1917-4F5B-A179-55154D3A3653} = {9CAB8535-0219-4736-94F5-134CE184CD21}
+	EndGlobalSection
+EndGlobal
