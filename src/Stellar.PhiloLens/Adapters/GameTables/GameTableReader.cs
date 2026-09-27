@@ -55,17 +55,25 @@ internal sealed class GameTableReader
     }
 
     /// <summary>The row with id <paramref name="id"/>, or null when there is none.</summary>
-    public static object? GetRow(object table, int id)
+    public static object? GetRow(object table, int id) => TryGetRow(table, id, out var row) ? row : null;
+
+    /// <summary>Looks row <paramref name="id"/> up. Returns false when the lookup itself failed (no row
+    /// accessor, or it threw), so callers can tell that apart from a table that simply has no such row
+    /// (true, with a null <paramref name="row"/>).</summary>
+    public static bool TryGetRow(object table, int id, out object? row)
     {
+        row = null;
         try
         {
             var getRow = table.GetType().GetMethod("GetRow", AnyInstance, null, new[] { typeof(int) }, null)
                 ?? table.GetType().GetMethod("get_Item", AnyInstance, null, new[] { typeof(int) }, null);
-            return getRow?.Invoke(table, new object[] { id });
+            if (getRow is null) return false;
+            row = getRow.Invoke(table, new object[] { id });
+            return true;
         }
         catch
         {
-            return null;
+            return false;
         }
     }
 

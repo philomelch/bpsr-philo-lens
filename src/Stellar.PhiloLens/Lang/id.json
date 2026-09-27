@@ -11,5 +11,8 @@
   "stats.none": "—",
   "imagine.tier": "{0} · Tingkat {1}",
   "section.imagines": "Battle Imagine",
-  "section.season_talent": "Talenta Musim"
+  "section.season_talent": "Talenta Musim",
+  "section.consumables": "Makanan & Ramuan",
+  "consumable.line": "{0}: {1}",
+  "consumable.line_timer": "{0}: {1} · {2}"
 }

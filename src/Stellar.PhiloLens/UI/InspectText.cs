@@ -12,7 +12,8 @@ namespace Stellar.PhiloLens.UI;
 /// <summary>The inspection window's text, built from an <see cref="InspectedPlayer"/>. <see cref="Refresh"/>
 /// runs from the update tick (never from the window's text callbacks, which only read the cached strings) and
 /// rebuilds only when the player, the language or the loaded names changed, or, while a name is still
-/// missing, at most once per <see cref="RetryIntervalMs"/>.</summary>
+/// missing, at most once per <see cref="RetryIntervalMs"/>. The consumable countdowns are rebuilt on their own,
+/// once per second while one is running.</summary>
 internal sealed class InspectText
 {
     // EAttrType ids; their localised labels come from the game's attribute table.
@@ -25,18 +26,29 @@ internal sealed class InspectText
     private readonly ILocalization _localization;
     private readonly IGameDataCombat _combatData;
     private readonly IBuildNameSource _buildNames;
+    private readonly ICombatSnapshot _combatSnapshot;
+    private readonly Func<long> _clockMs;
 
     private InspectedPlayer? _rendered;
     private string? _renderedLanguage;
     private int _renderedNamesVersion = -1;
     private bool _complete;
     private long _lastRenderMs;
+    private IReadOnlyList<ActiveConsumable>? _renderedConsumables;
+    private long _renderedConsumablesSecond = -1;
+    private bool _consumablesComplete;
+    private long _lastConsumablesRenderMs;
 
-    public InspectText(ILocalization localization, IGameDataCombat combatData, IBuildNameSource buildNames)
+    /// <param name="clockMs">Monotonic milliseconds for the retry pacing; the system tick count by default
+    /// (tests pass their own).</param>
+    public InspectText(ILocalization localization, IGameDataCombat combatData, IBuildNameSource buildNames,
+        ICombatSnapshot combatSnapshot, Func<long>? clockMs = null)
     {
         _localization = localization;
         _combatData = combatData;
         _buildNames = buildNames;
+        _combatSnapshot = combatSnapshot;
+        _clockMs = clockMs ?? (() => Environment.TickCount64);
     }
 
     public string ClassSpec { get; private set; } = string.Empty;
@@ -48,17 +60,27 @@ internal sealed class InspectText
     public string SeasonTalent { get; private set; } = string.Empty;
     public string SeasonTalentTitle { get; private set; } = string.Empty;
 
+    /// <summary>Food, potion and food-bonus buffs, one per line, with a countdown where they run out.</summary>
+    public string Consumables { get; private set; } = string.Empty;
+
     /// <summary>Rebuilds the text if anything it shows changed. Reads game data, so only call while game
     /// reads are safe (<c>IsWorldActive</c>).</summary>
     public void Refresh(InspectedPlayer? current)
     {
         _buildNames.Refresh();
-        if (current is not { } player || IsUpToDate(current)) return;
+        if (current is not { } player) return;
 
-        _rendered = current;
+        var rebuilt = !IsUpToDate(current);
+        if (rebuilt) Rebuild(player);
+        RefreshConsumables(player.Build.Consumables, rebuilt);
+    }
+
+    private void Rebuild(InspectedPlayer player)
+    {
+        _rendered = player;
         _renderedLanguage = _localization.Language;
         _renderedNamesVersion = _buildNames.Version;
-        _lastRenderMs = Environment.TickCount64;
+        _lastRenderMs = _clockMs();
         _complete = true;
         ClassSpec = FormatClassSpec(player.ClassSpec);
         SpecNote = player.ClassSpec is { HasClass: true, HasSpec: false } ? _localization.T("inspect.spec_not_seen") : string.Empty;
@@ -68,11 +90,65 @@ internal sealed class InspectText
         SeasonTalentTitle = _buildNames.SeasonTalentTitle ?? _localization.T("section.season_talent");
     }
 
+    // Countdowns change every second; the rest of the text doesn't, so this part is rebuilt on its own.
+    private void RefreshConsumables(IReadOnlyList<ActiveConsumable> consumables, bool force)
+    {
+        var nowMs = _combatSnapshot.ServerNowMs;
+        var second = HasRunningTimer(consumables, nowMs) ? nowMs / 1_000 : -1;
+        var unchanged = ReferenceEquals(consumables, _renderedConsumables) && second == _renderedConsumablesSecond;
+        // A buff name missing because the buff table was still loading is retried like a missing class name.
+        var retryDue = !_consumablesComplete && _clockMs() - _lastConsumablesRenderMs >= RetryIntervalMs;
+        if (!force && unchanged && !retryDue) return;
+
+        _renderedConsumables = consumables;
+        _renderedConsumablesSecond = second;
+        _lastConsumablesRenderMs = _clockMs();
+        _consumablesComplete = true;
+        Consumables = FormatConsumables(consumables, nowMs);
+    }
+
+    // Without server time yet (ServerNowMs is 0 until the first sync) no countdown can be shown.
+    private static bool HasRunningTimer(IReadOnlyList<ActiveConsumable> consumables, long nowMs)
+    {
+        if (nowMs <= 0) return false;
+        for (var i = 0; i < consumables.Count; i++)
+        {
+            if (consumables[i].HasTimer && consumables[i].RemainingMs(nowMs) > 0) return true;
+        }
+
+        return false;
+    }
+
+    private string FormatConsumables(IReadOnlyList<ActiveConsumable> consumables, long nowMs)
+    {
+        var lines = new StringBuilder();
+        for (var i = 0; i < consumables.Count; i++)
+        {
+            var consumable = consumables[i];
+            // A buff that has run out is about to be removed by the server; don't show it at 0:00 meanwhile.
+            if (consumable.HasTimer && nowMs > 0 && consumable.RemainingMs(nowMs) == 0) continue;
+
+            var buff = _combatData.GetBuff(consumable.BuffId);
+            if (buff is not { } info || string.IsNullOrEmpty(info.Name))
+            {
+                _consumablesComplete = false;
+                continue;
+            }
+
+            var line = consumable.HasTimer && nowMs > 0
+                ? _localization.TFormat("consumable.line_timer", info.Name, info.Description, Countdown.Format(consumable.RemainingMs(nowMs)))
+                : _localization.TFormat("consumable.line", info.Name, info.Description);
+            AppendLine(lines, line);
+        }
+
+        return lines.ToString();
+    }
+
     private bool IsUpToDate(InspectedPlayer? current)
     {
         var sameInputs = current == _rendered && ReferenceEquals(_localization.Language, _renderedLanguage)
             && _renderedNamesVersion == _buildNames.Version;
-        return sameInputs && (_complete || Environment.TickCount64 - _lastRenderMs < RetryIntervalMs);
+        return sameInputs && (_complete || _clockMs() - _lastRenderMs < RetryIntervalMs);
     }
 
     private string FormatClassSpec(ClassSpec classSpec)

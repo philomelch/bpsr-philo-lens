@@ -61,6 +61,20 @@ public sealed class SeasonTalentEffectOrdinaryTableBase
     public static TableProxy<SeasonTalentEffectOrdinaryTableBase> GetTable(bool autoLoad) => new(Rows);
 }
 
+public sealed class BuffTableBase
+{
+    public static Dictionary<int, BuffTableBase> Rows { get; } = new();
+
+    /// <summary>While true, GetTable throws, like a table that isn't loaded or readable.</summary>
+    public static bool Unavailable { get; set; }
+
+    public int Id { get; set; }
+    public int BuffAbilityType { get; set; }
+
+    public static TableProxy<BuffTableBase> GetTable(bool autoLoad) =>
+        Unavailable ? throw new System.InvalidOperationException("table not loaded") : new(Rows);
+}
+
 public sealed class TableProxy<TRow>
 {
     private readonly Dictionary<int, TRow> _rows;

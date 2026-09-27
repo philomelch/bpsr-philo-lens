@@ -17,6 +17,8 @@ window shows their class and spec (or "Spec not seen yet" while only the class i
   Battle Imagines by the name players use, with tier (e.g. "Phantom Arachnocrab · Tier 5"), and
   the season-talent board they run (e.g. "Fantasia Impact"). For players out of range only the
   Ability Score (from their profile) is shown.
+- **Food & potions** for players in range: active food ("Cuisine"), potion and "Foodie's Grace"
+  buffs with their effect and a live countdown of the time left.
 - **Season-proof labels:** season-specific names (the strength stat, the season-talent system and
   its boards, e.g. "Illusion-Breaking Strength" and "Deep Slumber" in season 3) come from the game's
   own data, so they change with the season and follow the game language. If the game data has no
@@ -28,7 +30,8 @@ Requires Stellar framework **2.11.0** or newer.
 ## Game data access
 
 Most data comes from the framework's typed services. A few names don't: the SDK has no lookup for
-a Battle Imagine's item, the season-talent boards or the season-talent system's name. For those,
+a Battle Imagine's item, the season-talent boards, the season-talent system's name or which buffs
+are food and potions. For those,
 the plugin reads some of the game's own **static configuration tables** through the SDK's
 reflection helper (`StellarInterop`, one of the framework's escape hatches):
 
@@ -37,6 +40,7 @@ reflection helper (`StellarInterop`, one of the framework's escape hatches):
 | `SkillAoyiTable` | Imagine skill → its Imagine item (then named by the typed item data, without the "Battle Imagine -" label all of them share) |
 | `SeasonTalentTemplateTable`, `SeasonTalentTreeTable`, `SeasonTalentEffectOrdinaryTable` | Season talent: which board (template) each season-talent buff comes from, and the board's name. Only boards of the running season (from the player's own season data) are used, rebuilt when a new season starts; nodes shared by several boards are ignored. |
 | `FunctionTable` | The game's name for the season-talent system (the boards' feature), used as the section title. |
+| `BuffTable` | Each buff's category (`BuffAbilityType`): 101 food, 102 potion, 104 food bonus. Looked up once per buff id. Names, descriptions and timing come from the typed SDK. |
 
 The tables are read only from the update tick while the world is loaded (never during a zone load)
 and cached.
