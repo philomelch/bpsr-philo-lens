@@ -48,8 +48,11 @@ internal static class SeasonTalentBuffs
 /// <param name="SeasonStrength">The season strength stat (e.g. "Illusion-Breaking Strength"); only sent while the player is in range.</param>
 /// <param name="Imagines">Equipped Battle Imagines with their tier.</param>
 /// <param name="SeasonTalentBuffIds">Season-talent effects, as buff ids.</param>
+/// <param name="Consumables">Active food, potion and food-bonus buffs, with their timing.</param>
 internal readonly record struct PlayerBuild(long AbilityScore, long SeasonStrength,
-    IReadOnlyList<EquippedImagine> Imagines, IReadOnlyList<int> SeasonTalentBuffIds)
+    IReadOnlyList<EquippedImagine> Imagines, IReadOnlyList<int> SeasonTalentBuffIds,
+    IReadOnlyList<ActiveConsumable> Consumables)
 {
-    public static PlayerBuild Empty => new(0, 0, Array.Empty<EquippedImagine>(), Array.Empty<int>());
+    public static PlayerBuild Empty =>
+        new(0, 0, Array.Empty<EquippedImagine>(), Array.Empty<int>(), Array.Empty<ActiveConsumable>());
 }

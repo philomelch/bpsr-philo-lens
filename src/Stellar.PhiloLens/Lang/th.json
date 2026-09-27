@@ -11,5 +11,8 @@
   "stats.none": "—",
   "imagine.tier": "{0} · ระดับ {1}",
   "section.imagines": "แบทเทิลอิมเมจิน",
-  "section.season_talent": "ทาเลนต์ซีซั่น"
+  "section.season_talent": "ทาเลนต์ซีซั่น",
+  "section.consumables": "อาหารและยา",
+  "consumable.line": "{0}: {1}",
+  "consumable.line_timer": "{0}: {1} · {2}"
 }

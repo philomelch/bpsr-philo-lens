@@ -1,8 +1,8 @@
 {
   "id": "philo-lens",
   "name": "Philo Lens",
-  "description": "See other players' class and spec from their profile card.",
+  "description": "Check nearby player's spec, AS/IBS, equipped Imagines, food/serum buffs, etc. from profile card.",
   "author": "philomelch",
   "tags": ["inspect", "social"],
-  "homepage": null
+  "homepage": "https://github.com/philomelch/bpsr-philo-lens"
 }

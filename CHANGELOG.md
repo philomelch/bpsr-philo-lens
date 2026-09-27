@@ -12,6 +12,12 @@ changelog buckets), with one `- ` bullet per change.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-27
+
+### Added
+
+- Food and potion buffs, with their effect and a countdown of the time left.
+
 ## [1.0.0] - 2026-09-27
 
 ### Added

@@ -3,48 +3,76 @@
 A [StellarResonance](https://github.com/StellarProtocol/StellarResonanceModSystem) plugin for
 *Blue Protocol: Star Resonance*.
 
-Inspect other players' class and spec. Open a player's profile card and press **Lens**: a small
-window shows their class and spec (or "Spec not seen yet" while only the class is known).
+A quick readiness check for raid and party leaders. Open a player's profile card and press
+**Lens**: a small window next to the card shows
+
+- their **class and spec** (or "Spec not seen yet" while only the class is known),
+- **Ability Score** and the **season strength** stat,
+- their equipped **Battle Imagines** and tier (e.g. "Phantom Arachnocrab · Tier 5"),
+- the **season-talent** board they run (e.g. "Fantasia Impact"),
+- active **food ("Cuisine"), serum (potion) and "Foodie's Grace"** buffs, with their effect and a
+  live countdown of the time left.
+
+The window sits at a fixed spot left of screen centre and closes together with the card.
+
+## What is shown, and where it comes from
 
 - **Spec** comes from the player's talents, which the server sends as soon as they come into
-  your range (framework 2.11.0+), so it is known in town before they fight. For players out of
-  range it falls back to skills they used in the current zone, then to their **class** alone
-  (e.g. players who haven't picked a spec yet).
+  your range, so it is known in town before they fight. Otherwise it falls back to skills they
+  used in the current zone, then to their **class** alone (e.g. players who haven't picked a spec).
 - **Class** comes from the player's live data, the party roster, or their profile data, in that
   order. A Battle Imagine transform (e.g. Lucy, Natsu) is never shown as a class; the last real
   class stays on screen.
-- **Build details** for players in range: Ability Score, the season strength stat, equipped
-  Battle Imagines by the name players use, with tier (e.g. "Phantom Arachnocrab · Tier 5"), and
-  the season-talent board they run (e.g. "Fantasia Impact"). For players out of range only the
-  Ability Score (from their profile) is shown.
+- **Ability Score, season strength, Imagines, season talent and food/serum** are only known for
+  players near you, because the game only sends them for players in range. For players further
+  away, only the class and the Ability Score (from their profile) are shown.
 - **Season-proof labels:** season-specific names (the strength stat, the season-talent system and
-  its boards, e.g. "Illusion-Breaking Strength" and "Deep Slumber" in season 3) come from the game's
-  own data, so they change with the season and follow the game language. If the game data has no
-  name, neutral labels ("Season Strength", "Season Talent") are shown instead.
-- The window sits at a fixed spot left of screen centre and closes together with the card.
+  its boards, e.g. "Illusion-Breaking Strength" and "Deep Slumber" in season 3) come from the
+  game's own data, so they change with the season and follow the game language. Where the game
+  data has no name, neutral labels ("Season Strength", "Season Talent") are shown.
+
+UI labels come in English, Indonesian, Japanese, Thai and Filipino. The non-English labels are
+machine-generated and haven't been checked by native speakers, so expect rough wording;
+corrections are welcome. Game names (classes, Imagines, buffs, boards) come from the game itself
+and follow the game's language.
 
 Requires Stellar framework **2.11.0** or newer.
+
+## Privacy
+
+Philo Lens only reads what the game already sends to your client about players near you. It
+stores nothing, sends nothing anywhere, and performs no game actions.
+
+## Installing
+
+Download `Stellar.PhiloLens.dll` from the latest
+[release](https://github.com/philomelch/bpsr-philo-lens/releases) and place it in
+`<game_mini>/stellar/plugins/philo-lens/`. (Installing through the Stellar launcher will be
+possible once the plugin is listed in a plugin registry.)
 
 ## Game data access
 
 Most data comes from the framework's typed services. A few names don't: the SDK has no lookup for
-a Battle Imagine's item, the season-talent boards or the season-talent system's name. For those,
-the plugin reads some of the game's own **static configuration tables** through the SDK's
-reflection helper (`StellarInterop`, one of the framework's escape hatches):
+a Battle Imagine's item, the season-talent boards, the season-talent system's name or which buffs
+are food and potions. For those, the plugin reads some of the game's own **static configuration
+tables** through the SDK's reflection helper (`StellarInterop`, one of the framework's escape hatches):
 
 | Table | Used for |
 |---|---|
 | `SkillAoyiTable` | Imagine skill → its Imagine item (then named by the typed item data, without the "Battle Imagine -" label all of them share) |
 | `SeasonTalentTemplateTable`, `SeasonTalentTreeTable`, `SeasonTalentEffectOrdinaryTable` | Season talent: which board (template) each season-talent buff comes from, and the board's name. Only boards of the running season (from the player's own season data) are used, rebuilt when a new season starts; nodes shared by several boards are ignored. |
 | `FunctionTable` | The game's name for the season-talent system (the boards' feature), used as the section title. |
+| `BuffTable` | Each buff's category (`BuffAbilityType`): 101 food, 102 potion, 104 food bonus. Looked up once per buff id. Names, descriptions and timing come from the typed SDK. |
 
 The tables are read only from the update tick while the world is loaded (never during a zone load)
 and cached.
 
 This is **read-only**: it calls only the tables' own getters, writes nothing, patches nothing and
-performs no game actions. It lives in `src/Stellar.PhiloLens/Adapters/GameTables/`. Results are
-cached for the session. If a game patch renames a table or column, the plugin falls back to the
-Imagine's skill name, the neutral section title, and hides the board line instead of failing.
+performs no game actions. It lives in `src/Stellar.PhiloLens/Adapters/GameTables/`. Answers are
+cached; the season-talent index is rebuilt when a new season starts, and a table that can't be
+read is asked for again later instead of being given up on. If a game patch renames a table or
+column, the plugin falls back to the Imagine's skill name and the neutral section title, and hides
+the lines it can't name, instead of failing.
 
 ## Build and test
 
@@ -56,7 +84,7 @@ dotnet build -c Release
 dotnet test -c Release
 ```
 
-## Try it in-game
+## Try a local build in-game
 
 Copy `src/Stellar.PhiloLens/bin/Release/net6.0/Stellar.PhiloLens.dll` into
 `<game_mini>/stellar/plugins/philo-lens/` and start the game. Logs go to
@@ -73,8 +101,9 @@ if** `<Version>` in the csproj is new. To release:
 3. Merge to `main`.
 
 The release carries the DLL, its `.sha256`, and `manifest.json`. The minimum framework version is
-taken from the pinned `Stellar.Abstractions` version. The shared registry picks it up within the
-hour. The plugin-level fields (description, tags, …) live in `stellar-plugin.json`.
+taken from the pinned `Stellar.Abstractions` version. Once the plugin is listed in a registry,
+the registry picks new releases up within the hour. The plugin-level fields (description, tags,
+homepage, …) live in `stellar-plugin.json`.
 
 Recommended repo settings: enable **immutable releases**, and protect `main` so changes arrive
 through pull requests that pass CI.

@@ -21,13 +21,15 @@ public sealed class Plugin : IStellarPlugin
     public Plugin(IPluginServices services)
     {
         _services = services;
+        var gameTables = new GameTableReader(services.Log);
         _inspection = new InspectionService(
             new ClassEvidenceSource(services.EntityDetail, services.CombatSpec, services.PartyRoster, services.ClientState),
-            new PlayerBuildReader(services.CombatLookup, services.EntityDetail, services.ResonanceData));
-        var buildNames = new GameTableNames(new GameTableReader(services.Log), services.GameData.Inventory,
-            services.ResonanceData, services.DeepSlumber, services.Log);
+            new PlayerBuildReader(services.CombatLookup, services.EntityDetail, services.ResonanceData,
+                new GameTableConsumables(gameTables)));
+        var buildNames = new GameTableNames(gameTables, services.GameData.Inventory, services.ResonanceData,
+            services.DeepSlumber, services.Log);
         _window = new InspectWindow(services.Windows, services.ClientState, services.Localization, _inspection,
-            new InspectText(services.Localization, services.GameData.Combat, buildNames));
+            new InspectText(services.Localization, services.GameData.Combat, buildNames, services.CombatSnapshot));
         _cardButton = new ProfileCardButton(services.ProfileCardActions, services.Localization, OnInspect);
 
         // A method group stored once, so Dispose can unsubscribe the same delegate (inline lambdas leak).

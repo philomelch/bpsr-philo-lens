@@ -11,5 +11,8 @@
   "stats.none": "—",
   "imagine.tier": "{0} · Tier {1}",
   "section.imagines": "Battle Imagines",
-  "section.season_talent": "Season Talent"
+  "section.season_talent": "Season Talent",
+  "section.consumables": "Food & Potions",
+  "consumable.line": "{0}: {1}",
+  "consumable.line_timer": "{0}: {1} · {2}"
 }

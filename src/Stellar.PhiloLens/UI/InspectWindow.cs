@@ -89,6 +89,7 @@ internal sealed class InspectWindow : IDisposable
         new ConditionalElement(When: () => _text.SpecNote.Length > 0, Then: new TextElement(() => _text.SpecNote)),
         new SeparatorElement(),
         new TextElement(() => _text.Stats),
+        Section(() => _localization.T("section.consumables"), () => _text.Consumables),
         Section(() => _localization.T("section.imagines"), () => _text.Imagines),
         Section(() => _text.SeasonTalentTitle, () => _text.SeasonTalent),
     }, Gap: 2f);
