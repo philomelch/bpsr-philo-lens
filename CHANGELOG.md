@@ -12,6 +12,13 @@ changelog buckets), with one `- ` bullet per change.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-27
+
+### Changed
+
+- The Lens window now opens near the middle of the screen, and you can drag it by its title bar to
+  wherever you like. It remembers where you put it.
+
 ## [1.1.0] - 2026-09-27
 
 ### Added

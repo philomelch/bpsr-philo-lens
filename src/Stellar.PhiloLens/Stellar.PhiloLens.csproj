@@ -6,7 +6,7 @@
     <AssemblyName>Stellar.PhiloLens</AssemblyName>
     <!-- The release version. A push to main publishes a release when this changes (and CHANGELOG.md
          has a matching "## [x.y.z] - YYYY-MM-DD" section). 0.0.0 means "not released yet". -->
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
