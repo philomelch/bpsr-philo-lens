@@ -13,7 +13,8 @@ A quick readiness check for raid and party leaders. Open a player's profile card
 - active **food ("Cuisine"), serum (potion) and "Foodie's Grace"** buffs, with their effect and a
   live countdown of the time left.
 
-The window sits at a fixed spot left of screen centre and closes together with the card.
+The window opens near the middle of the screen; drag it by its title bar to put it anywhere, and it
+stays there next time. It closes together with the card.
 
 ## What is shown, and where it comes from
 
@@ -45,10 +46,17 @@ stores nothing, sends nothing anywhere, and performs no game actions.
 
 ## Installing
 
-Download `Stellar.PhiloLens.dll` from the latest
+In the Stellar launcher's settings, add this under **Plugin Sources** (including `https://`):
+
+```
+https://stellar-plugins.philomel.dev
+```
+
+Then install **Philo Lens** from the launcher's plugin list, and update it from there too.
+
+To install by hand instead, download `Stellar.PhiloLens.dll` from the latest
 [release](https://github.com/philomelch/bpsr-philo-lens/releases) and place it in
-`<game_mini>/stellar/plugins/philo-lens/`. (Installing through the Stellar launcher will be
-possible once the plugin is listed in a plugin registry.)
+`<game_mini>/stellar/plugins/philo-lens/`.
 
 ## Game data access
 
@@ -101,8 +109,9 @@ if** `<Version>` in the csproj is new. To release:
 3. Merge to `main`.
 
 The release carries the DLL, its `.sha256`, and `manifest.json`. The minimum framework version is
-taken from the pinned `Stellar.Abstractions` version. Once the plugin is listed in a registry,
-the registry picks new releases up within the hour. The plugin-level fields (description, tags,
+taken from the pinned `Stellar.Abstractions` version. The
+[registry](https://github.com/philomelch/bpsr-stellar-philo-registry) picks new releases up within
+the hour. The plugin-level fields (description, tags,
 homepage, …) live in `stellar-plugin.json`.
 
 Recommended repo settings: enable **immutable releases**, and protect `main` so changes arrive

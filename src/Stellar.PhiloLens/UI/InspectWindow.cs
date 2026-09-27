@@ -5,8 +5,9 @@ using Stellar.PhiloLens.Application;
 
 namespace Stellar.PhiloLens.UI;
 
-/// <summary>Shows the inspected player's class, spec, stats and build at a fixed spot left of screen centre,
-/// next to where the profile card opens. Opened by the card's button and closed together with the card.
+/// <summary>Shows the inspected player's class, spec, stats and build. It opens near the middle of the screen
+/// and can be dragged by its title bar; the framework remembers where the player put it. Opened by the card's
+/// button and closed together with the card.
 /// All text comes from <see cref="InspectText"/>, refreshed by <see cref="RefreshText"/> from the update tick;
 /// the element callbacks only read its cached strings, so the UI never triggers game reads.</summary>
 internal sealed class InspectWindow : IDisposable
@@ -18,8 +19,9 @@ internal sealed class InspectWindow : IDisposable
     // card, so the flag dropping means the card was closed.
     private const GameUIState CardLayer = GameUIState.FullScreenMenu;
 
-    // Offset from the left edge of the canvas (vertically centred), in canvas units.
-    private const float LeftEdgeOffset = 60f;
+    // The window's height fits its content, so the framework can only centre its top edge. Raising the top
+    // by about half a typical filled-in window (canvas units) makes it open roughly centred on screen.
+    private const float CentreTopOffset = -180f;
     private const float Width = 300f;
     private const float SectionGap = 6f;
 
@@ -40,10 +42,12 @@ internal sealed class InspectWindow : IDisposable
         _inspection = inspection;
         _text = text;
         _control = windows.Register(new WindowRegistration(
-            Spec: new WindowSpec(WindowId, "Philo Lens", new WindowRect(LeftEdgeOffset, 0f, Width, 0f),
+            Spec: new WindowSpec(WindowId, "Philo Lens", new WindowRect(0f, CentreTopOffset, Width, 0f),
                 WindowCategory.Tools, WindowPanelStyle.GlassMenu)
             {
-                Anchor = WindowAnchor.Left,
+                Anchor = WindowAnchor.Center,
+                // Free drag by the title bar; the framework saves the position per layout slot and resolution.
+                Draggable = true,
                 Closable = true,
                 StartVisible = false,
                 ShouldRender = IsCardLayerOpen,
