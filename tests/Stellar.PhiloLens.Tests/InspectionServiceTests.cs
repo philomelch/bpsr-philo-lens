@@ -7,7 +7,7 @@ namespace Stellar.PhiloLens.Tests;
 
 public sealed class InspectionServiceTests
 {
-    private const long PlayerId = (215381L << 16) | 640;
+    private const long PlayerId = (100001L << 16) | 640;
     private const int Marksman = 11;
     private const int VerdantOracle = 5;
     private const int LucyTransform = 14;
@@ -56,7 +56,7 @@ public sealed class InspectionServiceTests
     [Fact]
     public void Inspecting_another_player_does_not_show_the_previous_one()
     {
-        const long otherId = (8194385L << 16) | 640;
+        const long otherId = (100002L << 16) | 640;
         var service = new InspectionService(_source, _build);
         _source.Evidence[PlayerId] = LiveClass(Marksman);
         service.Inspect(PlayerId);
