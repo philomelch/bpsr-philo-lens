@@ -81,6 +81,31 @@ public sealed class InspectionServiceTests
         Assert.Equal(134, service.Current?.Build.SeasonStrength);
     }
 
+    [Fact]
+    public void Out_of_range_the_cards_own_stats_fill_in()
+    {
+        var service = new InspectionService(_source, _build);
+        _source.Evidence[PlayerId] = LiveClass(Marksman);
+
+        service.Inspect(PlayerId, new ProfileStats(AbilityScore: 61_404, SeasonStrength: 3_863));
+
+        Assert.Equal(61_404, service.Current?.Build.AbilityScore);
+        Assert.Equal(3_863, service.Current?.Build.SeasonStrength);
+    }
+
+    [Fact]
+    public void Live_stats_win_over_the_cards()
+    {
+        var service = new InspectionService(_source, _build);
+        _source.Evidence[PlayerId] = LiveClass(Marksman);
+        _build.Build = PlayerBuild.Empty with { AbilityScore = 62_000, SeasonStrength = 3_900 };
+
+        service.Inspect(PlayerId, new ProfileStats(AbilityScore: 61_404, SeasonStrength: 3_863));
+
+        Assert.Equal(62_000, service.Current?.Build.AbilityScore);
+        Assert.Equal(3_900, service.Current?.Build.SeasonStrength);
+    }
+
     private static ClassEvidence LiveClass(int classId) => new(classId, 0, 0, 0, 0);
 
     private sealed class FakePlayerBuildSource : IPlayerBuildSource
