@@ -28,21 +28,32 @@ internal sealed class InspectionService
     public InspectedPlayer? Current { get; private set; }
 
     /// <summary>Starts inspecting <paramref name="entityId"/> and reads it right away when possible.</summary>
-    public void Inspect(long entityId)
+    /// <param name="entityId">The player's framework entity id value.</param>
+    /// <param name="profile">See <see cref="Refresh"/>.</param>
+    public void Inspect(long entityId, ProfileStats profile = default)
     {
         _targetEntityId = entityId;
         Current = null;
-        Refresh();
+        Refresh(profile);
     }
 
     /// <summary>Re-reads the inspected player. Keeps the last value while reads are unsafe.</summary>
-    public void Refresh()
+    /// <param name="profile">The player's own stats from their profile card's data, which stand in for the live
+    /// ones the game only sends while the player is in range; zeros when not read yet.</param>
+    public void Refresh(ProfileStats profile = default)
     {
         if (_targetEntityId is not { } entityId || !_source.CanRead) return;
 
         _lastKnownClassIds.TryGetValue(entityId, out var lastKnownClassId);
         var classSpec = ClassSpecResolver.Resolve(_source.Read(entityId), lastKnownClassId);
         if (classSpec.HasClass) _lastKnownClassIds[entityId] = classSpec.ClassId;
-        Current = new InspectedPlayer(entityId, classSpec, _buildSource.Read(entityId));
+        Current = new InspectedPlayer(entityId, classSpec, WithProfileFallback(_buildSource.Read(entityId), profile));
     }
+
+    // The live values are fresher, so the card's only fill in what's missing.
+    private static PlayerBuild WithProfileFallback(PlayerBuild build, ProfileStats profile) => build with
+    {
+        AbilityScore = build.AbilityScore > 0 ? build.AbilityScore : profile.AbilityScore,
+        SeasonStrength = build.SeasonStrength > 0 ? build.SeasonStrength : profile.SeasonStrength,
+    };
 }

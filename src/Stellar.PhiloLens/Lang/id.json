@@ -14,5 +14,10 @@
   "section.season_talent": "Talenta Musim",
   "section.consumables": "Makanan & Ramuan",
   "consumable.line": "{0}: {1}",
-  "consumable.line_timer": "{0}: {1} · {2}"
+  "consumable.line_timer": "{0}: {1} · {2}",
+  "party.title": "Party ({0}/{1})",
+  "party.roles": "Tank: {0}    Healer: {1}    DPS: {2}",
+  "party.column.name": "Nama",
+  "party.column.class": "Kelas",
+  "party.column.ability_score": "AS"
 }

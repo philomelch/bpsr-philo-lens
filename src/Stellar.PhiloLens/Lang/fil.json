@@ -14,5 +14,10 @@
   "section.season_talent": "Season Talent",
   "section.consumables": "Pagkain at Potion",
   "consumable.line": "{0}: {1}",
-  "consumable.line_timer": "{0}: {1} · {2}"
+  "consumable.line_timer": "{0}: {1} · {2}",
+  "party.title": "Party ({0}/{1})",
+  "party.roles": "Tank: {0}    Healer: {1}    DPS: {2}",
+  "party.column.name": "Pangalan",
+  "party.column.class": "Class",
+  "party.column.ability_score": "AS"
 }

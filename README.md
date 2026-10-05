@@ -11,7 +11,10 @@ A quick readiness check for raid and party leaders. Open a player's profile card
 - their equipped **Battle Imagines** and tier (e.g. "Phantom Arachnocrab · Tier 5"),
 - the **season-talent** board they run (e.g. "Fantasia Impact"),
 - active **food ("Cuisine"), serum (potion) and "Foodie's Grace"** buffs, with their effect and a
-  live countdown of the time left.
+  live countdown of the time left,
+- their **party**, to the right: how full it is (e.g. "Party (3/5)"), how many tanks, healers and
+  DPS it has, and each member's name, class (with spec when known), Ability Score and season
+  strength (headed by the initials of the season's own name for the stat, e.g. "IBS").
 
 The window opens near the middle of the screen; drag it by its title bar to put it anywhere, and it
 stays there next time. It closes together with the card.
@@ -26,7 +29,14 @@ stays there next time. It closes together with the card.
   class stays on screen.
 - **Ability Score, season strength, Imagines, season talent and food/serum** are only known for
   players near you, because the game only sends them for players in range. For players further
-  away, only the class and the Ability Score (from their profile) are shown.
+  away, the class, Ability Score and season strength come from the profile data the game loaded for
+  the card.
+- **Party** comes from the profile data the game loads for the card, so it works at any distance.
+  A member's spec shows only when that member is near you (or was seen casting); otherwise their
+  class alone. The party's copy of a member's stats can lag a little behind the member's own profile;
+  the player you inspected always shows their own, current values. A raid shows as "/20" however
+  few members it has, with its members in one list in party order. It isn't split into its raid
+  groups, because the card's copy of who is in which group can be out of date.
 - **Season-proof labels:** season-specific names (the strength stat, the season-talent system and
   its boards, e.g. "Illusion-Breaking Strength" and "Deep Slumber" in season 3) come from the
   game's own data, so they change with the season and follow the game language. Where the game
@@ -41,7 +51,8 @@ Requires Stellar framework **2.11.0** or newer.
 
 ## Privacy
 
-Philo Lens only reads what the game already sends to your client about players near you. It
+Philo Lens only reads what the game already sends to your client: data about players near you, and
+the profile data the game loads when you open someone's card. It never asks the server for anything,
 stores nothing, sends nothing anywhere, and performs no game actions.
 
 ## Installing
@@ -81,6 +92,20 @@ cached; the season-talent index is rebuilt when a new season starts, and a table
 read is asked for again later instead of being given up on. If a game patch renames a table or
 column, the plugin falls back to the Imagine's skill name and the neutral section title, and hides
 the lines it can't name, instead of failing.
+
+### Party roster (Lua, read-only)
+
+The framework's typed profile data carries only the party's size, not its members. The members are in
+the profile data the game itself loaded for the open card, which lives in the game's Lua state, so the
+plugin reads it through the SDK's `Lua` escape hatch. It lives in `src/Stellar.PhiloLens/Adapters/Party/`.
+
+- **Read-only.** The Lua chunk asks the UI for the open profile card (`Z.UIMgr:GetView('idcard')`) and
+  then only walks plain tables (`next`/`rawget`). It calls no game function that could fetch, send
+  or change anything; a unit test pins this down.
+- **Cheap.** It runs once when you press Lens, and again at most once a second (up to ten times)
+  while the card is still loading. The search under the card is bounded.
+- **Fails quietly.** If a game update moves or renames the data, the party section stays hidden
+  and the log says what the plugin found instead.
 
 ## Build and test
 

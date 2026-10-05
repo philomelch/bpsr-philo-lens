@@ -12,6 +12,19 @@ changelog buckets), with one `- ` bullet per change.
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-05
+
+### Added
+
+- A **Party** section beside the player's details when they're in a party: how full it is (a raid
+  counts out of 20), how many tanks, healers and DPS it has, and each member's name, class (with
+  spec when known), Ability Score and season strength. It works at any distance.
+- Season strength now also shows for players who aren't near you.
+
+### Changed
+
+- The Lens window is now only as wide as what it shows, with a little more space at its edges.
+
 ## [1.2.0] - 2026-09-27
 
 ### Changed

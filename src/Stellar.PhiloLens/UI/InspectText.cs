@@ -16,10 +16,6 @@ namespace Stellar.PhiloLens.UI;
 /// once per second while one is running.</summary>
 internal sealed class InspectText
 {
-    // EAttrType ids; their localised labels come from the game's attribute table.
-    private const int AbilityScoreAttributeId = 10030;
-    private const int SeasonStrengthAttributeId = 11440;
-
     // A missing name (e.g. the profession table still loading after login) is retried at this pace, not per tick.
     private const long RetryIntervalMs = 1_000;
 
@@ -153,29 +149,18 @@ internal sealed class InspectText
 
     private string FormatClassSpec(ClassSpec classSpec)
     {
-        if (!classSpec.HasClass) return _localization.T("inspect.unknown_class");
-
-        // The profession table loads lazily after login; retry on the next poll until it has the name.
-        var className = _combatData.GetProfession(classSpec.ClassId)?.Name;
-        if (string.IsNullOrEmpty(className))
-        {
-            _complete = false;
-            className = _localization.TFormat("inspect.class_id", classSpec.ClassId.ToString(CultureInfo.InvariantCulture));
-        }
-
-        // Spec names exist only in English in the SDK; fall back to the class alone for an unmapped id.
-        var specName = classSpec.HasSpec ? ProfessionSpecs.Name(classSpec.SpecId) : null;
-        return specName is null ? className : _localization.TFormat("inspect.class_spec", className, specName);
+        var text = ClassSpecText.Format(_localization, _combatData, classSpec, out var complete);
+        if (!complete) _complete = false;
+        return text;
     }
 
     private string FormatStats(PlayerBuild build) =>
-        StatRow(AbilityScoreAttributeId, "stats.ability_score", build.AbilityScore) + "\n"
-        + StatRow(SeasonStrengthAttributeId, "stats.season_strength", build.SeasonStrength);
+        StatRow(StatLabels.AbilityScoreAttributeId, "stats.ability_score", build.AbilityScore) + "\n"
+        + StatRow(StatLabels.SeasonStrengthAttributeId, "stats.season_strength", build.SeasonStrength);
 
     private string StatRow(int attributeId, string fallbackLabelKey, long value)
     {
-        var label = _combatData.GetAttribute(attributeId)?.Name;
-        if (string.IsNullOrEmpty(label)) label = _localization.T(fallbackLabelKey);
+        var label = StatLabels.Of(_localization, _combatData, attributeId, fallbackLabelKey);
         var text = value > 0 ? value.ToString("N0", CultureInfo.InvariantCulture) : _localization.T("stats.none");
         return _localization.TFormat("stats.row", label, text);
     }
